@@ -123,7 +123,7 @@ class Client extends \GuzzleHttp\Client implements \Psr\Log\LoggerAwareInterface
      * @return \GuzzleHttp\Promise\PromiseInterface
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function requestAsync($method, $uri = null, array $options = [])
+    public function requestAsync($method, $uri = null, array $options = []): GuzzleHttp\Promise\PromiseInterface
     {
         $options = $this->setRequestOptions($options);
 
