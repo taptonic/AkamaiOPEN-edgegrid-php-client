@@ -123,7 +123,7 @@ class Client extends \GuzzleHttp\Client implements \Psr\Log\LoggerAwareInterface
      * @return \GuzzleHttp\Promise\PromiseInterface
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function requestAsync($method, $uri = null, array $options = [])
+    public function requestAsync($method, $uri = null, array $options = []): \GuzzleHttp\Promise\PromiseInterface
     {
         $options = $this->setRequestOptions($options);
 
@@ -144,7 +144,7 @@ class Client extends \GuzzleHttp\Client implements \Psr\Log\LoggerAwareInterface
      *
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function sendAsync(\Psr\Http\Message\RequestInterface $request, array $options = [])
+    public function sendAsync(\Psr\Http\Message\RequestInterface $request, array $options = []): \GuzzleHttp\Promise\PromiseInterface
     {
         $options = $this->setRequestOptions($options);
 
@@ -263,29 +263,29 @@ class Client extends \GuzzleHttp\Client implements \Psr\Log\LoggerAwareInterface
      *
      * @param \Psr\Log\LoggerInterface $logger
      * @param string $messageFormat Message format
-     * @return $this
+     * @return void
      */
     public function setLogger(
-        \Psr\Log\LoggerInterface $logger = null,
-        $messageFormat = \GuzzleHttp\MessageFormatter::CLF
-    ) {
+        ?\Psr\Log\LoggerInterface $logger = null,
+        $messageFormat = null
+    ): void  {
         if ($logger === null) {
             $handler = new \Monolog\Handler\ErrorLogHandler(\Monolog\Handler\ErrorLogHandler::SAPI);
             $handler->setFormatter(new \Monolog\Formatter\LineFormatter('%message%'));
             $logger = new \Monolog\Logger('HTTP Log', [$handler]);
         }
 
-        $formatter = new \GuzzleHttp\MessageFormatter($messageFormat);
+        if ($messageFormat !== null) {
+            $this->setMessageFormat($messageFormat);
+        }
+        $formatter = new \GuzzleHttp\MessageFormatter($this->messageFormat);
 
         $handler = \GuzzleHttp\Middleware::log($logger, $formatter);
-        $this->logger = $handler;
+        $this->logger = $logger;
 
         $handlerStack = $this->getConfig('handler');
         $this->setLogHandler($handlerStack, $handler);
-
-        return $this;
     }
-
     /**
      * Add logger using a given filename/format
      *
